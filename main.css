@@ -5,6 +5,112 @@
 body {
     font-family: 'Roboto', sans-serif;
     margin: 20px;
-    /*background-color: dodgerblue;*/
+    background-color: #535763;
 }
 
+.options {
+    display:flex;
+    flex-wrap: wrap;
+    margin-left: 225px;
+    margin-right: 225px;
+    margin-top: 100px;
+    align-items: center;
+    justify-content: center;
+}
+
+button {
+    width: 400px;
+    font-weight: 500;
+    text-align: left;
+    color: white;
+    background: #41444C;
+    cursor: pointer;
+    border-radius: 5px;
+    border: solid 1px black;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 16px 20px;
+    font-size: 14px;
+    margin: 16px;
+    text-decoration: none;
+}
+
+button:hover, button:focus {
+background-color: #282B31;
+-webkit-transition: background 0.1s;
+-moz-transition: background 0.1s;
+-o-transition: background 0.1s;
+transition: background 0.1s;
+}
+
+.hidden {
+    display: none;
+}
+
+.question {
+    margin-top: 100px;
+    color: white;
+    text-align: center;
+}
+
+header {
+    color: white;
+}
+
+.play {
+    font-size: 40px;
+    width: 200px;
+    margin:300px auto;
+    display:block;
+    text-align: center;
+    border: none;
+}
+
+.play-menu-text {
+    color: white;
+    font-size: 60px;
+    text-align: center;
+    margin: 150px auto -200px;
+    text-shadow: 0 0 5px;
+}
+
+.playagain {
+    font-size: 40px;
+    width: 300px;
+    margin:50px auto;
+    display:block;
+    text-align: center;
+    border: none;
+}
+
+.result {
+    color: white;
+    font-size: 60px;
+    text-align: center;
+    margin: 150px auto -250px;
+    text-shadow: 0 0 5px;
+}
+
+h2 {
+    font-size: 40px;
+    text-align: center;
+    margin-left: auto;
+    margin-top: 300px;
+    text-shadow: 0 0 5px;
+}
+
+.green {
+    color: green;
+}
+
+.yellow {
+    color: yellow;
+}
+
+.orange {
+    color: orange;
+}
+
+.red {
+    color:red;
+}

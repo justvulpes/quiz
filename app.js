@@ -28,70 +28,102 @@ function getQuestionTemplate() {
         '<button id="js-c3">' + quiz.questions[state.questionNr][1][3] + '</button>'
     ];
 
-    buttons = shuffle(buttons);
+    buttons = shuffle(buttons); // shuffle list of buttons
 
     return (
-        '<h1 id="js-question">' + quiz.questions[state.questionNr][0] + '</h1>' +
-        '<div class="js-choices">' + buttons[0] + buttons[1] + buttons[2] + buttons[3] + '</div>'
+        '<h1 class="question" id="js-question">' + quiz.questions[state.questionNr][0] + '</h1>' +
+        '<div class="options js-choices">' + buttons[0] + buttons[1] + buttons[2] + buttons[3] + '</div>'
     );
 }
 
 function handleButtonPress() {
 
-    var correctAns = 3;
-    var quizElement = $('.quiz-container');
+    var quizElement = $('.js-quiz-container');
 
     quizElement.on('click', '#js-start', function () {
         handleNextQuestion();
     });
 
     quizElement.on('click', '#js-c0', function () {
-        if (correctAns === 0) {
-            state.correctlyGuessed++;
-        }
-        handleNextQuestion();
-        console.log("Pressed js-c0");
+        state.correctlyGuessed++;
+        handleButtonEvents(null, false);
     });
 
     quizElement.on('click', '#js-c1', function () {
-        if (correctAns === 1) {
-            state.correctlyGuessed++;
-        }
-        handleNextQuestion();
-        console.log("Pressed js-c1");
+        handleButtonEvents($('#js-c1'), true);
     });
 
     quizElement.on('click', '#js-c2', function () {
-        if (correctAns === 2) {
-            state.correctlyGuessed++;
-        }
-        handleNextQuestion();
-        console.log("Pressed js-c2");
+        handleButtonEvents($('#js-c2'), true);
     });
 
     quizElement.on('click', '#js-c3', function () {
-        if (correctAns === 3) {
-            state.correctlyGuessed++;
-        }
-        handleNextQuestion();
-        console.log("Pressed js-c3");
+        handleButtonEvents($('#js-c3'), true);
     });
 
+    quizElement.on('click', "#js-playagain", function () {
+        handlePlayAgain();
+    });
 }
 
-function handleNextQuestion() {
-    var quizCointainerElement = $('.quiz-container');
+function handleButtonEvents(buttonElement, wrongAns) {
+    if (wrongAns) buttonElement.css('background-color', 'red');
+    $('#js-c0').css('background-color', '#0CB863');
+    $(':button').prop('disabled', true);
+    setTimeout(function(){handleNextQuestion();}, 1000);
+}
 
-    if (state.questionNr === 0) $('#js-start').remove();
-    if (state.questionNr === 10) {
-        $('header').remove();
-        quizCointainerElement.append('<h1>' + 'Game over' + '</h1>');
+function handlePlayAgain() {
+    var quizElement = $('.js-quiz-container');
+
+    // revert states back to inital
+    quizElement.children().remove();
+    quizElement.append('<h1 class="play-menu-text">Can you beat this Quiz?</h1>' +
+        '<button class="play" id="js-start">Play</button></main>');
+    state.questionNr = 0;
+    state.correctlyGuessed = 0;
+}
+
+function getResultMessage() {
+    if (state.correctlyGuessed === 10) {
+        return ["Perfect!", "green"];
+    } else if (state.correctlyGuessed >= 8) {
+        return ["Nice!", "yellow"];
+    } else if (state.correctlyGuessed >= 5) {
+        return ["Good!", "orange"];
+    } else {
+        return ["Awful!", "red"];
     }
+}
+function handleNextQuestion() {
+    $(':button').prop('disabled', false);
+    var quizCointainerElement = $('.js-quiz-container');
+
+    // remove start page stuff
+    if (state.questionNr === 0) {
+        $('#js-start').remove();
+        $('h1').remove();
+        $('#js-counter').removeClass('hidden')
+    }
+
+    // remove old questions and choices
     $('#js-question').remove();
     $('.js-choices').remove();
-    quizCointainerElement.append(getQuestionTemplate());
+
+    // go to results page
+    if (state.questionNr === 10) {
+        $('#js-counter').addClass('hidden');
+        var message = getResultMessage()[0];
+        var color = getResultMessage()[1];
+        quizCointainerElement.append('<h1 class="result">Quiz Over!</h1><h2 class=' + color + '>' + message + '<br>' +
+            'Correct: ' + state.correctlyGuessed + ' / ' + state.NrOfQuestions + '</h2>' +
+            '<button class="playagain" id="js-playagain">Play again</button>');
+        return;
+    }
+
+    quizCointainerElement.append(getQuestionTemplate()); // add html for new question
     state.questionNr += 1;
-    changeQuestionNumberTo(state.questionNr)
+    $('#js-q-nr').text(state.questionNr); // update question number
 }
 
 function shuffle(array) {
@@ -113,11 +145,7 @@ function shuffle(array) {
     return array;
 }
 
-function changeQuestionNumberTo(nr) {
-    $('#js-q-nr').text(nr);
-}
-
 $(function () {
-    quiz.questions = shuffle(quiz.questions);
+    quiz.questions = shuffle(quiz.questions); // shuffle questions for a random order
     handleButtonPress();
 });
