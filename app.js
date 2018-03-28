@@ -1,4 +1,4 @@
-var quiz = {
+const quiz = {
     // first answer is the correct one
     questions: [
         ["Who invented Ferrari?", ["Enzo Ferrari", "Erno Ferrari", "Joe Ferrari", "Peter Ferrari"]],
@@ -14,15 +14,45 @@ var quiz = {
     ]
 };
 
-var state = {
+const nrOfQuestions = quiz.questions.length;
+
+let state = {
     questionNr: 0,
     correctlyGuessed: 0,
-    NrOfQuestions: quiz.questions.length
 };
+
+// animation callback title -> play button appears
+
+$.fn.extend({
+    animateCss: function (animationName, callback) {
+        let animationEnd = (function (el) {
+            let animations = {
+                animation: 'animationend',
+                OAnimation: 'oAnimationEnd',
+                MozAnimation: 'mozAnimationEnd',
+                WebkitAnimation: 'webkitAnimationEnd',
+            };
+
+            for (let t in animations) {
+                if (el.style[t] !== undefined) {
+                    return animations[t];
+                }
+            }
+        })(document.createElement('div'));
+
+        this.addClass('animated ' + animationName).one(animationEnd, function () {
+            $(this).removeClass('animated ' + animationName);
+
+            if (typeof callback === 'function') callback();
+        });
+
+        return this;
+    },
+});
 
 function getQuestionTemplate() {
 
-    var buttons = ['<button id="js-c0">' + quiz.questions[state.questionNr][1][0] + '</button>',
+    let buttons = ['<button id="js-c0">' + quiz.questions[state.questionNr][1][0] + '</button>',
         '<button id="js-c1">' + quiz.questions[state.questionNr][1][1] + '</button>',
         '<button id="js-c2">' + quiz.questions[state.questionNr][1][2] + '</button>',
         '<button id="js-c3">' + quiz.questions[state.questionNr][1][3] + '</button>'
@@ -38,7 +68,7 @@ function getQuestionTemplate() {
 
 function handleButtonPress() {
 
-    var quizElement = $('.js-quiz-container');
+    let quizElement = $('.js-quiz-container');
 
     quizElement.on('click', '#js-start', function () {
         handleNextQuestion();
@@ -67,14 +97,30 @@ function handleButtonPress() {
 }
 
 function handleButtonEvents(buttonElement, wrongAns) {
-    if (wrongAns) buttonElement.css('background-color', 'red');
     $('#js-c0').css('background-color', '#0CB863');
     $(':button').prop('disabled', true);
-    setTimeout(function(){handleNextQuestion();}, 1000);
+    if (wrongAns) {
+        buttonElement.css('background-color', 'red');
+        if ($('#js-c1').text() !== buttonElement.text()) {
+            $('#js-c1').animateCss('fadeOutRightBig', handleNextQuestion);
+        }
+        if ($('#js-c2').text() !== buttonElement.text()) {
+            $('#js-c2').animateCss('fadeOutRightBig', handleNextQuestion);
+        }
+        if ($('#js-c3').text() !== buttonElement.text()) {
+            $('#js-c3').animateCss('fadeOutRightBig', handleNextQuestion);
+        }
+        return
+    }
+
+    $('#js-c1').animateCss('fadeOutRightBig', handleNextQuestion);
+    $('#js-c2').animateCss('fadeOutRightBig', handleNextQuestion);
+    $('#js-c3').animateCss('fadeOutRightBig', handleNextQuestion);
+
 }
 
 function handlePlayAgain() {
-    var quizElement = $('.js-quiz-container');
+    let quizElement = $('.js-quiz-container');
 
     // revert states back to inital
     quizElement.children().remove();
@@ -85,49 +131,70 @@ function handlePlayAgain() {
 }
 
 function getResultMessage() {
-    if (state.correctlyGuessed === 10) {
+    if (state.correctlyGuessed === nrOfQuestions) {
         return ["Perfect!", "green"];
-    } else if (state.correctlyGuessed >= 8) {
+    } else if (state.correctlyGuessed >= nrOfQuestions * 0.8) {
         return ["Nice!", "yellow"];
-    } else if (state.correctlyGuessed >= 5) {
+    } else if (state.correctlyGuessed >= nrOfQuestions * 0.5) {
         return ["Good!", "orange"];
     } else {
         return ["Awful!", "red"];
     }
 }
+
 function handleNextQuestion() {
     $(':button').prop('disabled', false);
-    var quizCointainerElement = $('.js-quiz-container');
-
     // remove start page stuff
     if (state.questionNr === 0) {
-        $('#js-start').remove();
-        $('h1').remove();
-        $('#js-counter').removeClass('hidden')
+        $('#js-start').animateCss('hinge', function () {
+            $('#js-start').remove();
+            $('h1').remove();
+            $('#js-counter').removeClass('hidden');
+            changeDisplay();
+        });
+    } else {
+        changeDisplay();
     }
+
+
+}
+
+function changeDisplay() {
+    let quizCointainerElement = $('.js-quiz-container');
 
     // remove old questions and choices
     $('#js-question').remove();
     $('.js-choices').remove();
 
     // go to results page
-    if (state.questionNr === 10) {
+    if (state.questionNr === nrOfQuestions) {
         $('#js-counter').addClass('hidden');
-        var message = getResultMessage()[0];
-        var color = getResultMessage()[1];
-        quizCointainerElement.append('<h1 class="result">Quiz Over!</h1><h2 class=' + color + '>' + message + '<br>' +
-            'Correct: ' + state.correctlyGuessed + ' / ' + state.NrOfQuestions + '</h2>' +
+        let message = getResultMessage()[0];
+        let color = getResultMessage()[1];
+        quizCointainerElement.append('<h1 class="result">Quiz Over!</h1><h2 class="end ' + color + '">' + message + '<br>' +
+            'Correct: ' + state.correctlyGuessed + ' / ' + nrOfQuestions + '</h2>' +
             '<button class="playagain" id="js-playagain">Play again</button>');
+        $('.result').animateCss('flash');
+        $('.end').animateCss('bounceIn');
+        $('.playagain').addClass('animated shake infinite');
         return;
     }
 
     quizCointainerElement.append(getQuestionTemplate()); // add html for new question
     state.questionNr += 1;
+    $('#js-q-total').text(nrOfQuestions);
     $('#js-q-nr').text(state.questionNr); // update question number
+
+    // add animation to question
+    // $('.question').addClass('animated fadeInLeft');
+    $('#js-c0').animateCss('fadeInLeftBig');
+    $('#js-c1').animateCss('fadeInLeftBig');
+    $('#js-c2').animateCss('fadeInLeftBig');
+    $('#js-c3').animateCss('fadeInLeftBig');
 }
 
 function shuffle(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex;
+    let currentIndex = array.length, temporaryValue, randomIndex;
 
     // While there remain elements to shuffle...
     while (0 !== currentIndex) {
@@ -148,4 +215,10 @@ function shuffle(array) {
 $(function () {
     quiz.questions = shuffle(quiz.questions); // shuffle questions for a random order
     handleButtonPress();
+});
+
+
+$('.play-menu-text').animateCss('bounceInDown', function () {
+    $('#js-start').removeClass('not-visible');
+    $('#js-start').animateCss('bounceIn');
 });

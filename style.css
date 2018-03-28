@@ -9,7 +9,7 @@ body {
 }
 
 .options {
-    display:flex;
+    display: flex;
     flex-wrap: wrap;
     margin-left: 290px;
     margin-right: 290px;
@@ -33,14 +33,15 @@ button {
     font-size: 14px;
     margin: 16px;
     text-decoration: none;
+
 }
 
 button:hover, button:focus {
-background-color: #282B31;
--webkit-transition: background 0.1s;
--moz-transition: background 0.1s;
--o-transition: background 0.1s;
-transition: background 0.1s;
+    background-color: #282B31;
+    -webkit-transition: background 0.1s;
+    -moz-transition: background 0.1s;
+    -o-transition: background 0.1s;
+    transition: background 0.1s;
 }
 
 .hidden {
@@ -60,8 +61,8 @@ header {
 .play {
     font-size: 40px;
     width: 200px;
-    margin:300px auto;
-    display:block;
+    margin: 300px auto;
+    display: block;
     text-align: center;
     border: none;
 }
@@ -77,8 +78,8 @@ header {
 .playagain {
     font-size: 40px;
     width: 300px;
-    margin:50px auto;
-    display:block;
+    margin: 50px auto;
+    display: block;
     text-align: center;
     border: none;
 }
@@ -112,5 +113,25 @@ h2 {
 }
 
 .red {
-    color:red;
+    color: red;
 }
+
+.mybtn {
+    margin-top: 200px;
+}
+
+.content-box {
+    margin-top: 200px;
+}
+
+.box {
+    width: 50px;
+    height: 50px;
+    background-color: #ff0069;
+    border-radius: 10px;
+}
+
+.not-visible {
+    visibility: hidden;
+}
+
